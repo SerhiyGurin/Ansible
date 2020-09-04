@@ -1,0 +1,28 @@
+[virtual_servers]
+gitlab ansible_host=gitlab
+owncloud ansible_host=owncloud
+prometheus asible_host=prometheus
+zabbix ansible_host=zabbix
+jenkins ansible_host=jenkins
+pi-hole ansible_host=pi-hole
+logserver ansible_host=logserver
+ansible ansible_host=127.0.0.1
+
+[jenkins_node]
+jenkins-wn-1 ansible_host=jenkins-wn-1
+jenkins-wn-2 ansible_host=jenkins-wn-2
+
+[web_servers]
+web-server ansible_host=web-server
+   
+[test_servers] 
+ubutest ansible_host=ubutest
+
+[aws]
+vpn-server ansible_host=vpn-server
+
+[ws]
+ubu-ws ansible_host=ubu-ws
+
+[sg_vn]
+ndd ansible_host=ndd

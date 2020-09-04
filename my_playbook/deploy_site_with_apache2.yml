@@ -1,0 +1,82 @@
+---
+    - name: Сonfiguring the Server as a WEB Server
+      hosts: "{{ MYHOST }}"
+      become: yes
+      
+      vars: 
+        messeg1: Server configuration completed
+        app_folder: /home/sg/website/index.html
+        dest_app_folder: /var/www/html/
+
+      tasks: 
+      - name: Check and print Linux Version
+        debug: var=ansible_os_family
+
+      - name: Check pkg mng
+        debug: var=ansible_pkg_mgr
+          
+      - block: # ========Block for CentOS-8========
+         
+         - name: Update CentOS-8 Server
+           shell: dnf update -y
+
+         - name: Install Apache2 Server for CentOS-8
+           dnf: name=httpd state=latest
+
+         - name: Start WebServer service on CentOS-8
+           service: name=httpd state=started enabled=yes
+
+         - name: Copy application on Server
+           copy: src={{ app_folder }} dest={{ dest_app_folder }}index.html mode=0555
+
+         - name: Add FireWall Rules for CentOS
+           shell: firewall-cmd --permanent --zone=public --add-service=http && firewall-cmd --reload
+           
+         - name: Restart WEB service on CentOS-8
+           service: name=httpd state=restarted  
+
+        when: ansible_pkg_mgr == "dnf"
+          
+      - block: # ========Block for CentOS-7========
+         - name: Update CentOS-7 Server
+           shell: yum update -y
+           
+         - name: Install Apache2 Server for CentOS-7
+           yum:  name=httpd state=latest
+
+         - name: Start WebServer service on CentOS-7
+           service: name=httpd state=started enabled=yes
+
+         - name: Copy application on Server
+           copy: src={{ app_folder }} dest={{ dest_app_folder }}index.html mode=0555
+         
+         - name: Add FireWall Rules CentOS-7
+           shell: firewall-cmd --permanent --zone=public --add-service=http && firewall-cmd --reload
+
+         - name: Restart WEB service on CentOS-7
+           service: name=httpd state=restarted
+          
+        when: ansible_pkg_mgr == "yum"   
+
+      - block: # ========Block for Ubuntu==========
+         - name: Update Ubuntu Server
+           shell: apt-get update && apt-get upgrade -y
+                
+         - name: Install Apache2 Server for Ubuntu
+           apt: name=apache2 state=latest
+           
+         - name: Start WebServer service on Ubuntu
+           service: name=apache2 state=started enabled=yes
+           
+         - name: Copy application on Server
+           copy: src={{ app_folder }} dest={{ dest_app_folder }}index.html mode=0555
+           
+         - name: Restart WEB service on Ubuntu
+           service: name=apache2 state=restarted
+
+        when: ansible_pkg_mgr == "apt"
+        
+      - name: Completing the configuration
+        debug:
+          msg: "----{{ messeg1 }}----"
+...          

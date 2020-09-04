@@ -1,0 +1,44 @@
+---
+   - name: Server update
+     hosts: "{{ MYHOST }}"
+     become: yes
+  
+     vars: 
+         messeg1: Server update completed successfully
+
+     tasks: 
+     - name: Check and print Linux Version
+       debug: var=ansible_os_family
+
+     - name: Check pkg mng
+       debug: var=ansible_pkg_mgr
+      
+     - block: # ========Block for CentOS-8========
+       - name: Update CentOS-8 Server
+         shell: dnf update -y
+         args:
+          warn: no
+       when: ansible_pkg_mgr == "dnf"
+
+     - block: # ========Block for CentOS-7========
+       - name: Update CentOS-7 Server
+         shell: yum update -y
+       when: ansible_pkg_mgr == "yum"   
+
+     - block: # ========Block for Ubuntu==========
+       - name: Update Ubuntu Server
+         shell: apt-get update && apt-get upgrade -y
+       when: ansible_pkg_mgr == "apt"        
+       
+     - name: Completing the configuration
+       debug:
+         msg: "---- {{ messeg1 }} ----"
+     
+     - name: uptime
+       shell: uptime -p
+       register: date
+     
+     - name: Duration of work
+       debug:
+         var: date.stdout_lines
+...          

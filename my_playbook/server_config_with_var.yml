@@ -1,0 +1,53 @@
+---
+    - name: Server configuration
+      hosts: "{{ MYHOST }}"
+      become: yes
+      
+      vars: 
+        packages_rh: [ 'tree', 'mc', 'net-tools', 'nano', 'git', 'bind-utils', 'traceroute', 'wget' ]
+        packages_deb: [ 'tree', 'mc', 'net-tools', 'nano', 'dnsutils', 'traceroute' ]
+        messeg1: Server configuration completed
+
+      tasks: 
+      - name: Check and print Linux Version
+        debug: var=ansible_os_family
+
+      - name: Check pkg mng
+        debug: var=ansible_pkg_mgr
+          
+      - block: # ========Block for CentOS-8========
+         - name: Update CentOS-8 Server
+           shell: dnf update -y
+           args:
+            warn: no
+
+         - name: Install applications with dnf pkg mgr
+           dnf:  
+             pkg: "{{ packages_rh }}"  
+        when: ansible_pkg_mgr == "dnf"
+
+      - block: # ========Block for CentOS-7========
+         - name: Update CentOS-7 Server
+           shell: yum update -y
+           
+         - name: Install application with yum pkg mgr
+           yum:
+             pkg: "{{ packages_rh }}"
+        when: ansible_pkg_mgr == "yum"   
+
+      - block: # ========Block for Ubuntu==========
+         - name: Update Ubuntu Server
+           shell: apt-get update && apt-get upgrade -y
+                
+         - name: Install application with apt pkg mgr
+           apt:
+             pkg: "{{ packages_deb }}"        
+        when: ansible_pkg_mgr == "apt"
+              
+      - name: Set Date
+        shell: timedatectl set-timezone Europe/Kiev      
+        
+      - name: Completing the configuration
+        debug:
+          msg: "----{{ messeg1 }}----"
+...          
