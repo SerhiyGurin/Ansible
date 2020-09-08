@@ -1,0 +1,27 @@
+---
+    - name: Deploy my site on NGINX WebServer
+      hosts: "{{ MYHOST }}"
+      become: yes
+
+      vars:
+          messeg1: Deploy on NGINX Server completed
+          app_folder: /home/sg/website-1/mywebsite/
+          dest_app_folder: /var/www/resume/html/
+
+      tasks:
+          - name: Check and print Linux Version
+            debug: var=ansible_os_family
+
+          - name: Check pkg mng
+            debug: var=ansible_pkg_mgr
+
+          - name: Copy application on Server
+            copy: src={{ app_folder }} dest={{ dest_app_folder }}
+
+          - name: Restart WEB service
+            service: name=nginx state=restarted
+
+          - name: Completing the deploy
+            debug:
+              msg: "----{{ messeg1 }}----"
+... 

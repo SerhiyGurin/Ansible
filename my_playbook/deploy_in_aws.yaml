@@ -1,0 +1,27 @@
+---
+- name: Deploy site on AWS WebServer
+  hosts: "{{ MYHOST }}"
+  become: yes
+      
+  vars: 
+      messeg1: Deploy on AWS WEB Server complate 
+      app_folder: /home/sg/site/index.php
+      dest_app_folder: /var/www/html/
+
+  tasks: 
+      - name: Check and print Linux Version
+        debug: var=ansible_os_family
+
+      - name: Check pkg mng
+        debug: var=ansible_pkg_mgr
+                     
+      - name: Copy application on Server
+        copy: src={{ app_folder }} dest={{ dest_app_folder }}index.php mode=0555
+        
+      - name: Restart WEB service
+        service: name=httpd state=restarted
+         
+      - name: Completing the deploy
+        debug:
+          msg: "----{{ messeg1 }}----"
+...          
