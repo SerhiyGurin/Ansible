@@ -30,7 +30,7 @@
            copy: src={{ app_folder }} dest={{ dest_app_folder }}index.html mode=0555
 
          - name: Add FireWall Rules for CentOS
-           shell: firewall-cmd --permanent --zone=public --add-service=http && firewall-cmd --reload
+           shell: firewall-cmd --permanent --zone=public --add-service=http && firewall-cmd --permanent --zone=public --add-service=https && firewall-cmd --reload
            
          - name: Restart WEB service on CentOS-8
            service: name=httpd state=restarted  
@@ -51,7 +51,7 @@
            copy: src={{ app_folder }} dest={{ dest_app_folder }}index.html mode=0555
          
          - name: Add FireWall Rules CentOS-7
-           shell: firewall-cmd --permanent --zone=public --add-service=http && firewall-cmd --reload
+           shell: firewall-cmd --permanent --zone=public --add-service=http && firewall-cmd --permanent --zone=public --add-service=https && firewall-cmd --reload
 
          - name: Restart WEB service on CentOS-7
            service: name=httpd state=restarted
